@@ -1,0 +1,186 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Global procedures of WD OPC
+ major_version : 28
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x10ed499401fd4dd2
+ internal_properties : CAAAAAgAAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  internal_properties : CAAAAAgAAAAdC5DaGsntqmfkq1J4p6eipmeEO//QiIdypV0FB6KY+wiPKnW2KoJpaKmeXvb1NGpH4KGGthHXu/V4LqeilI4jnJwO5Q==
+  type_code : 31
+  p_codes :
+   -
+     code : |1-
+      CONSTANT
+      	VT_EMPTY	= 0
+      	VT_NULL	= 1
+      	VT_I2	= 2 //
+      	VT_I4	= 3 //
+      	VT_R4	= 4 //
+      	VT_R8	= 5 //
+      	VT_CY	= 6
+      	VT_DATE	= 7
+      	VT_BSTR	= 8
+      	VT_DISPATCH	= 9
+      	VT_ERROR	= 10
+      	VT_BOOL	= 11
+      	VT_VARIANT	= 12
+      	VT_UNKNOWN	= 13
+      	VT_DECIMAL	= 14
+      	VT_I1	= 16
+      	VT_UI1	= 17
+      	VT_UI2	= 18 //
+      	VT_UI4	= 19 //
+      	VT_I8	= 20
+      	VT_UI8	= 21
+      	VT_INT	= 22
+      	VT_UINT	= 23
+      	VT_VOID	= 24
+      	VT_HRESULT	= 25
+      	VT_PTR	= 26
+      	VT_SAFEARRAY	= 27
+      	VT_CARRAY	= 28
+      	VT_USERDEFINED	= 29
+      	VT_LPSTR	= 30
+      	VT_LPWSTR	= 31
+      	VT_RECORD	= 36
+      	VT_INT_PTR	= 37
+      	VT_UINT_PTR	= 38
+      	VT_FILETIME	= 64
+      	VT_BLOB	= 65
+      	VT_STREAM	= 66
+      	VT_STORAGE	= 67
+      	VT_STREAMED_OBJECT	= 68
+      	VT_STORED_OBJECT	= 69
+      	VT_BLOB_OBJECT	= 70
+      	VT_CF	= 71
+      	VT_CLSID	= 72
+      	VT_VERSIONED_STREAM	= 73
+      	VT_BSTR_BLOB	= 0xfff
+      	VT_VECTOR	= 0x1000
+      	VT_ARRAY	= 0x2000
+      	VT_BYREF	= 0x4000
+      	VT_RESERVED	= 0x8000
+      	VT_ILLEGAL	= 0xffff
+      	VT_ILLEGALMASKED	= 0xfff
+      	VT_TYPEMASK	= 0xfff
+      END
+     type : 720896
+  procedures :
+   -
+     name : sGetQuality
+     procedure_id : 1219711974124703186
+     type_code : 15
+     code : |1+
+      // Syntax:
+      //[ <Result> = ] sGetQuality (<nQuality>)
+      //
+      // Parameters:
+      // 	nQuality: OPC quality value
+      // Return value:
+      // 	string: quality in plain words
+      
+      PROCEDURE sGetQuality(nQuality)
+      
+      SWITCH(nQuality)
+      	CASE 0 :	RESULT “BAD”
+      	CASE 64 :	RESULT “UNCERTAIN”
+      	CASE 192 :	RESULT “GOOD”
+      	CASE 8 :	RESULT “NOT_CONNECTED”
+      	CASE 13 :	RESULT “DEVICE_FAILURE”
+      	CASE 16 :	RESULT “SENSOR_FAILURE”
+      	CASE 20	:	RESULT “LAST_KNOWN”
+      	CASE 24 :	RESULT “COMM_FAILURE”
+      	CASE 28 :	RESULT “OUT_OF_SERVICE”
+      	CASE 132 :	RESULT “LAST_USABLE”
+      	CASE 144 :	RESULT “SENSOR_CAL”
+      	CASE 148 :	RESULT “EGU_EXCEEDED”
+      	CASE 152 :	RESULT “SUB_NORMAL”
+      	CASE 216 :	RESULT “LOCAL_OVERRIDE”
+      END
+      
+      RESULT “UNKNOWN ERROR”
+      
+      
+      
+     type : 458752
+   -
+     name : vGetValueAccordingToType
+     procedure_id : 1219711974124768722
+     type_code : 15
+     code : |1+
+      // Summary: Used to retrieve the values in proper format
+      // Syntax:
+      //[ <Result> = ] vGetValueAccordingToType (<ArrValues>, <nType>)
+      //
+      // Parameters:
+      //	ArrValues: array of values to retrieve according to their type
+      //	nType: Type that must be retrieved
+      
+      Procedure vGetValueAccordingToType(ArrValues, nType)
+      
+      nLocalType is int
+      bIsArray is boolean
+      parrValues is array dynamic
+      nDimension is int
+      
+      IF BinaryAND(nType,VT_ARRAY) THEN
+      	// This is an array
+      	nLocalType = nType - VT_ARRAY
+      	bIsArray = True
+      ELSE
+      	// This is not an array
+      	bIsArray = False
+      END
+      
+      // Allocate the array according to the type of the item
+      SWITCH nLocalType
+      
+      	CASE VT_I2
+      		parrValues = new array of Dimension(ArrValues) 2-byte int
+      	CASE VT_I4
+      		parrValues = new array of Dimension(ArrValues) 4-byte int
+      	CASE VT_R4
+      		parrValues = new array of Dimension(ArrValues) 4-byte real
+      	CASE VT_R8
+      		parrValues = new array of Dimension(ArrValues) 8-byte real
+      	CASE VT_UI2
+      		parrValues = new array of Dimension(ArrValues) 2-byte unsigned int
+      	CASE VT_UI4
+      		parrValues = new array of Dimension(ArrValues) 4-byte unsigned int
+      		
+      	OTHER CASE
+      		parrValues = new array of Dimension(ArrValues) 2-byte int // By default, it is an array of WORD
+      END
+      
+      // Copies the data into the array in proper format
+      nDimension = Dimension(ArrValues)
+      FOR i = 1 TO nDimension
+      	parrValues[i] = ArrValues[i]
+      END
+      
+      dbgAssert(Dimension(parrValues) >= 1)
+      
+      // If it's an array, return the full array
+      IF bIsArray = True THEN
+      	RESULT parrValues
+      ELSE
+      	// Otherwise, return the first value
+      	RESULT parrValues[1]
+      END
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : CAAAAAgAAACVGQgYbalU7DKC3oH4ItDrjtcTHXXV/EuH8q0IbhyQlw==
+resources :
+ string_res :
+  identifier : 0x102cb30000ccb59a
+  internal_properties : CAAAAAgAAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : CAAAAAgAAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
